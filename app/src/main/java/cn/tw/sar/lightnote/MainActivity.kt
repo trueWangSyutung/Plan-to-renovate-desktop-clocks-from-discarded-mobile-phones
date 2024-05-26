@@ -357,15 +357,15 @@ class MainActivity : ComponentActivity(), LocationService.LocationCallBack  {
     fun ImageCLock(){
         thread {
             // 每10s切换一次页面
-            while (true) {
-                Thread.sleep(20000)
-
-                currimg.value+=1
-                if (currimg.value >= imgs.size) {
-                    currimg.value = 0
+                while (true) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                    imgs.clear()
+                    imgs.addAll(WidgetUtils.readImagesFromGallery(this))
+                    Log.d("MainActivity", "onCreate: ${imgs.size}")
                 }
-
-                Log.d("ImageCLock", "ImageCLock: ${currimg.value}")
+                    // 每 30min
+                    Thread.sleep(1000 * 60 * 30)
 
 
             }
@@ -418,9 +418,6 @@ class MainActivity : ComponentActivity(), LocationService.LocationCallBack  {
             == PackageManager.PERMISSION_GRANTED) {
             imgs.addAll(WidgetUtils.readImagesFromGallery(this))
             Log.d("MainActivity", "onCreate: ${imgs.size}")
-            for (img in imgs) {
-                Log.d("MainActivity", "onCreate: ${img.path}")
-            }
         }
 
         //使用ServiceConnection来监听Service状态的变化
@@ -544,6 +541,7 @@ class MainActivity : ComponentActivity(), LocationService.LocationCallBack  {
                                 }
                             }
                             Clock()
+                            ImageCLock()
                             Subjection(
                                 width = widthDp/2,
                                 height = heightDp,
