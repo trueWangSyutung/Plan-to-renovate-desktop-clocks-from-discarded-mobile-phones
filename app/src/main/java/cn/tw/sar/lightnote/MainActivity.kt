@@ -13,10 +13,13 @@ import android.os.IBinder
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -32,6 +35,7 @@ import androidx.core.view.WindowCompat
 import cn.tw.sar.easylauncher.utils.LocalCalenderUtils
 import cn.tw.sar.easylauncher.utils.getDarkModeBackgroundColor
 import cn.tw.sar.easylauncher.utils.getDarkModeTextColor
+import cn.tw.sar.lightnote.bean.Key
 import cn.tw.sar.lightnote.bean.SongList
 import cn.tw.sar.lightnote.dao.HitokotoApi
 import cn.tw.sar.lightnote.dao.MusicApi
@@ -44,6 +48,7 @@ import cn.tw.sar.lightnote.util.LunarCalender
 import cn.tw.sar.lightnote.util.WidgetUtils
 import cn.tw.sar.lightnote.widgets.Subjection
 import cn.tw.sar.lightnote.widgets.Weather
+import cn.tw.sar.lightnote.widgets.WeatherDetail
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.Gson
 import com.qweather.sdk.bean.base.Code
@@ -370,8 +375,20 @@ class MainActivity : ComponentActivity(), LocationService.LocationCallBack  {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         requestsPermission()
+
+
+        // 从 assets 中读取文件 key.json
+        val file = assets.open("key.json")
+        val byteArray = ByteArray(file.available())
+        file.read(byteArray)
+        file.close()
+        val json = String(byteArray)
+        Log.d("MainActivity", " : $json")
+        var key = Gson().fromJson(json, Key::class.java)
+
+
         // 获取定位
-        HeConfig.init("HE2405252104481410", "34e6e73be7bb4bada3f860a6f17e88e8");
+        HeConfig.init(key.appid, key.key)
         HeConfig.switchToDevService();
 
 
@@ -500,7 +517,8 @@ class MainActivity : ComponentActivity(), LocationService.LocationCallBack  {
                                         context = this@MainActivity, 0
                                     )
                                 )
-                                .padding(10.dp),
+                                .padding(10.dp)
+                              ,
 
                         ) {
                             var thread = Thread {
@@ -655,6 +673,7 @@ class MainActivity : ComponentActivity(), LocationService.LocationCallBack  {
                                 context = this@MainActivity,
                                 localName = currlocalName.value
                             )
+
                         }
                     }
 

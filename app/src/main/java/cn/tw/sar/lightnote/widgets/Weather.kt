@@ -43,11 +43,57 @@ import androidx.compose.ui.res.painterResource
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat.startActivity
 import cn.tw.sar.lightnote.R
 import cn.tw.sar.lightnote.enums.StyleType
 import cn.tw.sar.lightnote.util.IconsConvert
 import kotlin.concurrent.thread
+
+@Composable
+@Preview(
+    showBackground = true,
+)
+fun WeatherDetail(
+    width: Float = 400f,
+    height: Float = 400f,
+    backgroundColor: Color = Color.White,
+    subBackgroundColor: Color =  Color(0xFFF5EEE6),
+    weatherBackgroundColor : Color = Color(0xFFE8E8E8),
+    fontColor : Color = Color.Black,
+    modifier: Modifier = Modifier,
+    url : String = "https://www.baidu.com",
+
+){
+    Column(
+        modifier = modifier
+            .width(width.dp)
+            .height(height.dp)
+            .padding(10.dp)
+            .background(
+                color = backgroundColor, shape = MaterialTheme.shapes.medium
+            )
+            .padding(10.dp),
+
+        ) {
+        // WebView
+        AndroidView(
+            factory = { context ->
+                android.webkit.WebView(context).apply {
+                    loadUrl(url)
+                    // 设置背景颜色
+
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize().background(
+                    color = weatherBackgroundColor,
+                    shape = MaterialTheme.shapes.medium
+                ),
+        )
+    }
+}
+
 
 @Composable
 @Preview(
@@ -106,14 +152,15 @@ fun Weather(
                 Icon(
                     painter = painterResource(id = IconsConvert.convertNumberToResourceID(weather.now?.icon?.toInt()!!)),
                     contentDescription = null,
-                    modifier = Modifier.padding(15.dp,0.dp,0.dp,0.dp)
+                    modifier = Modifier
+                        .padding(15.dp, 0.dp, 0.dp, 0.dp)
                         .size(50.dp),
                     tint = fontColor
                 )
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(10.dp,0.dp,0.dp,0.dp),
+                        .padding(10.dp, 0.dp, 0.dp, 0.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
@@ -146,7 +193,8 @@ fun Weather(
         }
         Row(
             modifier = Modifier
-                .fillMaxWidth().padding(0.dp,10.dp)
+                .fillMaxWidth()
+                .padding(0.dp, 10.dp)
                 .fillMaxHeight(1f)
                 .background(
                     color = subBackgroundColor,
